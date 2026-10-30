@@ -150,6 +150,12 @@ class TestServicesAndCli:
         assert services.output_dir(AppSettings()) == services.paths.default_output_dir
         assert services.output_dir(AppSettings(output_directory=str(tmp_path))) == tmp_path
 
+    def test_project_output_dir(self, services: AppServices, tmp_path: Path) -> None:
+        settings = AppSettings(output_directory=str(tmp_path))
+        assert services.project_output_dir(settings, "myorg", "My Project") == tmp_path / "myorg" / "My Project"
+        assert services.project_output_dir(settings, "org", "a/b:c") == tmp_path / "org" / "a_b_c"
+        assert services.project_output_dir(settings, "org1", "P") != services.project_output_dir(settings, "org2", "P")
+
     def test_create_with_paths(self, app_paths, monkeypatch: pytest.MonkeyPatch) -> None:
         import wiki_indexer.services as services_module
 
@@ -170,7 +176,7 @@ class TestServicesAndCli:
         out = capsys.readouterr().out
         assert code == 0
         assert "✓ Connected" in out and "Indexed 6 pages" in out and "Search Term: Terraform" in out
-        assert (tmp_path / "index.md").exists()
+        assert (tmp_path / "myorg" / PROJECT / "index.md").exists()
 
     def test_cli_test_only_with_stored_pat(self, fake_ado: FakeAdo, services: AppServices, monkeypatch, capsys) -> None:
         monkeypatch.delenv("AZDO_PAT", raising=False)

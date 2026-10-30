@@ -94,7 +94,7 @@ def test_full_indexing_flow(qtbot, window: MainWindow, fake_ado: FakeAdo, tmp_pa
     wait_idle(qtbot, window)
     assert window.status_label.text().startswith("✓ Indexed 6 pages"), window.status_label.text()
     assert window.open_output_button.isEnabled()
-    assert (tmp_path / "out" / "toc.md").exists()
+    assert (tmp_path / "out" / "myorg" / "MyProject" / "toc.md").exists()
 
     # Table of contents
     root = window.toc_tree.topLevelItem(0)

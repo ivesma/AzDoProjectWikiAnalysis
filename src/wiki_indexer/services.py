@@ -22,6 +22,7 @@ from wiki_indexer.utils.credentials import (
     KeyringCredentialStore,
     credential_account,
 )
+from wiki_indexer.utils.filenames import safe_segment
 from wiki_indexer.utils.progress import ProgressCallback, null_progress
 from wiki_indexer.utils.secrets import SecretString
 
@@ -66,6 +67,10 @@ class AppServices:
     def output_dir(self, settings: AppSettings) -> Path:
         return Path(settings.output_directory) if settings.output_directory else self.paths.default_output_dir
 
+    def project_output_dir(self, settings: AppSettings, organization: str, project: str) -> Path:
+        """Exports go to ``<output>/<organisation>/<project>/`` so runs never overwrite each other."""
+        return self.output_dir(settings) / safe_segment(organization) / safe_segment(project)
+
     # -- credentials ------------------------------------------------------------------------------
 
     def stored_pat(self, organization_url: str) -> SecretString | None:
@@ -104,7 +109,7 @@ class AppServices:
                 WikiService(client, project),
                 settings,
                 keywords,
-                self.output_dir(settings),
+                self.project_output_dir(settings, client.organization, project),
                 organization=client.organization,
             )
             return pipeline.run(wikis, token, progress)

@@ -165,7 +165,7 @@ The CLI exits with `0` on success, `1` on failure, `2` for missing arguments and
 | `exportMarkdown` | `true` | Write `wiki/`, `toc.md`, `index.md` and `summary.md` |
 | `exportJson` | `true` | Write `wiki.json`, `toc.json`, `index.json` and `wikis.json` |
 | `exportCsv` | `true` | Write `page_inventory.csv` and `keyword_index.csv` |
-| `outputDirectory` | `""` | Export folder; empty uses the default location (see below) |
+| `outputDirectory` | `""` | Root export folder (results go in `<organisation>/<project>/` beneath it); empty uses the default location (see below) |
 | `threadCount` | `10` | Parallel page downloads (1–64) |
 | `requestTimeoutSeconds` | `30` | Per-request timeout |
 | `maxRetries` | `5` | Retries for HTTP 429/5xx, with exponential back-off that honours `Retry-After` |
@@ -203,23 +203,27 @@ Set the environment variable `WIKI_INDEXER_HOME` to keep everything under one fo
 
 ## Output
 
+Each export goes into its own `<organisation>/<project>/` folder under the output directory, so indexing different organisations or projects never overwrites earlier results.
+
 ```text
 output/
-├── wiki/                     # every page as its original Markdown, hierarchy preserved
-│   ├── Architecture.md
-│   ├── Architecture/
-│   │   ├── Components.md
-│   │   └── Security.md
-│   └── Runbooks.md
-├── toc.md                    # nested list with links into wiki/
-├── index.md                  # ## Term → pages
-├── summary.md                # counts, wikis, top terms, failed pages, structure tree
-├── wiki.json                 # full page tree with content and metadata
-├── toc.json
-├── index.json                # { "Terraform": ["/Architecture/IaC", ...] }
-├── wikis.json                # wiki metadata
-├── page_inventory.csv        # one row per page
-└── keyword_index.csv         # term, type, location, occurrences
+└── myorg/
+    └── MyProject/
+        ├── wiki/                 # every page as its original Markdown, hierarchy preserved
+        │   ├── Architecture.md
+        │   ├── Architecture/
+        │   │   ├── Components.md
+        │   │   └── Security.md
+        │   └── Runbooks.md
+        ├── toc.md                # nested list with links into wiki/
+        ├── index.md              # ## Term → pages
+        ├── summary.md            # counts, wikis, top terms, failed pages, structure tree
+        ├── wiki.json             # full page tree with content and metadata
+        ├── toc.json
+        ├── index.json            # { "Terraform": ["/Architecture/IaC", ...] }
+        ├── wikis.json            # wiki metadata
+        ├── page_inventory.csv    # one row per page
+        └── keyword_index.csv     # term, type, location, occurrences
 ```
 
 - When a project has **several wikis**, each wiki gets its own sub-folder under `wiki/`, and index locations take the form `WikiName:/path`.
