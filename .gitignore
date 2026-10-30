@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Azure DevOps Wiki Indexer
+!installer/AzureDevOpsWikiIndexer.spec
+logs/
+output/*
+!output/.gitkeep
